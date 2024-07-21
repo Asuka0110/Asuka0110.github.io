@@ -32,7 +32,7 @@
 <title>DDS信号发生器-AD9850 | 苔的技术博客</title>
 
 
-    <meta name="keywords" content="电子设计, 电子模块, EE IC">
+    <meta name="keywords" content="电子模块, 电子设计, EE IC">
 
 
 
@@ -146,13 +146,14 @@
 <article class="post post__with-toc content-card">
     <div class="post__header"></div>
     <div class="post__content">
-        <h1 id="DDS信号发生器"><a href="#DDS信号发生器" class="headerlink" title="DDS信号发生器"></a>DDS信号发生器</h1><h2 id="DDS-Direct-Digital-Synthesis-直接数字频率合成"><a href="#DDS-Direct-Digital-Synthesis-直接数字频率合成" class="headerlink" title="DDS(Direct Digital Synthesis,直接数字频率合成)"></a>DDS(Direct Digital Synthesis,直接数字频率合成)</h2><h3 id="DDS基础原理及公式推导"><a href="#DDS基础原理及公式推导" class="headerlink" title="DDS基础原理及公式推导"></a>DDS基础原理及公式推导</h3><p>对一正弦波形进行采样，若每周期有m个采样点，分别记为1~m，即对应每次参考时钟f<sub>c</sub>来到上升沿就输出一个采样点，则输出如图中所示的一个周期的正弦，需要m个时钟周期，即需要m*1&#x2F;f<sub>c</sub>的时间。</p>
-<p>也即，输出的波形频率为f<sub>a</sub>&#x3D;f<sub>c</sub>&#x2F;m。</p>
-<p>此时，每次时钟信号到来时，相位累加器加1，就会在第i个时钟周期输出第i个采样点（i&#x3D;1~m），第m+1个时钟周期输出第1个采样点，以此循环。这时的相位累加器是步进为1的模m计数器。</p>
-<p>若每次时钟信号到来时，总是间隔一个采样点输出，即相位累加器的步进2，这时在第i个时钟周期输出第2i个采样点，m’是m的0.5倍，故输出的波形频率为f<sub>a</sub>‘&#x3D;2<em>f<sub>a</sub>&#x3D;2f<sub>c</sub>&#x2F;m。</em></p>
+        <h1 id="DDS信号发生器"><a href="#DDS信号发生器" class="headerlink" title="DDS信号发生器"></a>DDS信号发生器</h1><h2 id="DDS-Direct-Digital-Synthesis-直接数字频率合成"><a href="#DDS-Direct-Digital-Synthesis-直接数字频率合成" class="headerlink" title="DDS(Direct Digital Synthesis,直接数字频率合成)"></a>DDS(Direct Digital Synthesis,直接数字频率合成)</h2><h3 id="DDS基础原理及公式推导"><a href="#DDS基础原理及公式推导" class="headerlink" title="DDS基础原理及公式推导"></a>DDS基础原理及公式推导</h3><p>对一正弦波形进行采样，若每周期有m个采样点，分别记为1~m，即对应每次参考时钟f<sub>c</sub>来到上升沿就输出一个采样点，则输出如图中所示的一个周期的正弦，需要m个时钟周期，即需要m*1/f<sub>c</sub>的时间。</p>
+<p>也即，输出的波形频率为f<sub>a</sub>=f<sub>c</sub>/m。</p>
+<p>此时，每次时钟信号到来时，相位累加器加1，就会在第i个时钟周期输出第i个采样点（i=1~m），第m+1个时钟周期输出第1个采样点，以此循环。这时的相位累加器是步进为1的模m计数器。</p>
+<p>若每次时钟信号到来时，总是间隔一个采样点输出，即相位累加器的步进2，这时在第i个时钟周期输出第2i个采样点，m’是m的0.5倍，故输出的波形频率为f<sub>a</sub>‘=2<em>f<sub>a</sub>=2f<sub>c</sub>/m。</em></p>
 <p><img src="/images/dds1.png" alt="图片"></p>
-<p>在实际设计中，相位累加器的单位是bits(位)。若相位累加器是N位的，则有2<sup>N</sup>个存储单元来存储采样数据。如果我们队一个周期的波形进行2<sup>N</sup>个点的采样，即m&#x3D;2<sup>N</sup>，此时输出频率f<sub>o</sub>、系统时钟频率f<sub>c</sub>、相位累加器长度N以及频率控制字B（即上文提到的，相位累加器的步进长度）的关系为：<br>$$<br>f_o &#x3D; \frac{f_c\times B}{2^N}<br>$$</p>
-<h3 id="DDS精度"><a href="#DDS精度" class="headerlink" title="DDS精度"></a>DDS精度</h3>
+<p>在实际设计中，相位累加器的单位是bits(位)。若相位累加器是N位的，则有2<sup>N</sup>个存储单元来存储采样数据。如果我们队一个周期的波形进行2<sup>N</sup>个点的采样，即m=2<sup>N</sup>，此时输出频率f<sub>o</sub>、系统时钟频率f<sub>c</sub>、相位累加器长度N以及频率控制字B（即上文提到的，相位累加器的步进长度）的关系为：</p>
+<script type="math/tex; mode=display">
+f_o = \frac{f_c\times B}{2^N}</script><h3 id="DDS精度"><a href="#DDS精度" class="headerlink" title="DDS精度"></a>DDS精度</h3>
     </div>
     
     <div class="post__license">
@@ -169,7 +170,7 @@
     </div>
  
     <div class="post-footer__meta"><p>updated at 2024-07-21</p></div> 
-    <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a><a href="/tags/%E7%94%B5%E5%AD%90%E6%A8%A1%E5%9D%97/" class="post-tags__link button"># 电子模块</a></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E6%A8%A1%E5%9D%97/" class="post-tags__link button"># 电子模块</a><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a></div> 
 </article>
 
 
