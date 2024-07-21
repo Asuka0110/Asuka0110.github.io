@@ -29,10 +29,10 @@
     <!-- meta -->
 
 
-<title>晶体管电路基础 | 苔的技术博客</title>
+<title>电源管理 | 苔的技术博客</title>
 
 
-    <meta name="keywords" content="电子设计, 模拟电子技术, EE IC">
+    <meta name="keywords" content="电子设计, EE IC">
 
 
 
@@ -107,12 +107,12 @@
 
 <div class="post-title">
     <h1 class="post-title__text">
-        晶体管电路基础
+        电源管理
     </h1>
     <div class="post-title__meta">
-        <a href="/archives/2024/07/" class="post-meta__date button">2024-07-18</a>
+        <a href="/archives/2024/07/" class="post-meta__date button">2024-07-20</a>
         
-    <span class="separate-dot"></span><a href="/categories/%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/" class="button">系统学习</a>
+    <span class="separate-dot"></span><a href="/categories/%E7%94%B5%E8%B5%9B/" class="button">电赛</a>
 
  
         
@@ -129,7 +129,7 @@
 
     <aside class="post-side">
         <div class="post-side__toc">
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E6%9E%81%E6%80%A7%E6%99%B6%E4%BD%93%E7%AE%A1%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E6%94%BE%E5%A4%A7%E7%94%B5%E8%B7%AF"><span class="toc-text">双极性晶体管的工作原理及放大电路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E7%AE%80%E5%8C%96%E6%A8%A1%E5%9E%8B"><span class="toc-text">晶体管简化模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E5%88%86%E7%B1%BB"><span class="toc-text">晶体管分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%B5%E6%B5%81%E5%85%B3%E7%B3%BB"><span class="toc-text">晶体管的基本电流关系</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%88%E7%8E%87%E6%B5%8B%E8%AF%95"><span class="toc-text">效率测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%B5%8B%E8%AF%95"><span class="toc-text">输出测试</span></a></li></ol></li></ol>
         </div>
     </aside>
     <a class="btn-toc button" id="btn-toc" tabindex="0">
@@ -139,25 +139,48 @@
     </a>
     <div class="toc-menus" id="toc-menus">
         <div class="toc-title">Article Directory</div>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E6%9E%81%E6%80%A7%E6%99%B6%E4%BD%93%E7%AE%A1%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E6%94%BE%E5%A4%A7%E7%94%B5%E8%B7%AF"><span class="toc-text">双极性晶体管的工作原理及放大电路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E7%AE%80%E5%8C%96%E6%A8%A1%E5%9E%8B"><span class="toc-text">晶体管简化模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E5%88%86%E7%B1%BB"><span class="toc-text">晶体管分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%B6%E4%BD%93%E7%AE%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%B5%E6%B5%81%E5%85%B3%E7%B3%BB"><span class="toc-text">晶体管的基本电流关系</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%88%E7%8E%87%E6%B5%8B%E8%AF%95"><span class="toc-text">效率测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%B5%8B%E8%AF%95"><span class="toc-text">输出测试</span></a></li></ol></li></ol>
     </div>
 
 
 <article class="post post__with-toc content-card">
     <div class="post__header"></div>
     <div class="post__content">
-        <!--本笔记内容基于《新概念模拟电路》第一册晶体管与《晶体管电路设计》-->
-<h1 id="晶体管基础"><a href="#晶体管基础" class="headerlink" title="晶体管基础"></a>晶体管基础</h1><p>1947年由肖克利发明的晶体管，属于双极性晶体管(Bipolar Junction Transistor,BJT)。此外，晶体管的另一个分支，场效应管(Field Effect Transistor,FET)=结型场效应管(Junction Field Effect Transistor,JEFT)+金属氧化物半导体场效应管(Metal-Oxide-Semiconductor Field Effect Transistor,MOSFET)。</p>
-<h2 id="双极性晶体管的工作原理及放大电路"><a href="#双极性晶体管的工作原理及放大电路" class="headerlink" title="双极性晶体管的工作原理及放大电路"></a>双极性晶体管的工作原理及放大电路</h2><h3 id="晶体管简化模型"><a href="#晶体管简化模型" class="headerlink" title="晶体管简化模型"></a>晶体管简化模型</h3><p>双极型晶体管可简化为如下模型：</p>
-<p><img src="/images/jtg1.png" alt="图片"></p>
-<h3 id="晶体管分类"><a href="#晶体管分类" class="headerlink" title="晶体管分类"></a>晶体管分类</h3><p>半导体材料有N型半导体与P型半导体两种。</p>
-<p>N代表Negative，在+4的硅材料中掺杂少量+5元素如砷、磷等制成，多子为电子。</p>
-<p>P代表Positive，在+4的硅材料中掺杂少量+3元素如硼等，多子为空穴。</p>
-<p>双极性晶体管分为NPN管与PNP管。</p>
-<p><img src="/images/jtg2.png" alt="图片"></p>
-<p>看NPN管：其中b、e组成了一个PN结，称为发射结；b、c组成了另一个PN结，称为集电结。</p>
-<h3 id="晶体管的基本电流关系"><a href="#晶体管的基本电流关系" class="headerlink" title="晶体管的基本电流关系"></a>晶体管的基本电流关系</h3><p><img src="/images/jtg3.png" alt="图片"></p>
-<p>发射结电压：U<sub>B</sub> - U<sub>E</sub> = U<sub>BE</sub></p>
+        <h1 id="电源系统架构"><a href="#电源系统架构" class="headerlink" title="电源系统架构"></a>电源系统架构</h1><p>将不稳定、不合要求的电源，转化为稳定而符合要求的稳定电源。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><h3 id="效率测试"><a href="#效率测试" class="headerlink" title="效率测试"></a>效率测试</h3><ol>
+<li><p>P<sub>out</sub>/P<sub>in</sub></p>
+<p>效率=输出功率/输入功率。</p>
+</li>
+<li><p>冷机效率</p>
+<p>上电一瞬间测出的功率。</p>
+</li>
+<li><p>热机效率</p>
+<p>上电一段时间后，当负载满功率运转时测出的功率。</p>
+</li>
+</ol>
+<h3 id="输出测试"><a href="#输出测试" class="headerlink" title="输出测试"></a>输出测试</h3><ol>
+<li><p>输出电压调整率</p>
+<ul>
+<li>源调整率</li>
+<li>负载调整率</li>
+<li>温度调整率</li>
+</ul>
+</li>
+<li><p>纹波测量</p>
+<ul>
+<li>20Mhz带宽</li>
+<li>最小接地环</li>
+<li>测量位置</li>
+</ul>
+</li>
+<li>动态负载测试<ul>
+<li>电子负载</li>
+<li>变化斜率</li>
+<li>电容对动态的影响</li>
+<li>电感对动态的影响</li>
+</ul>
+</li>
+</ol>
 
     </div>
     
@@ -169,20 +192,20 @@
             <strong>
                 Permalink: 
             </strong>
-            <a href="http://example.com/2024/07/18/%E6%99%B6%E4%BD%93%E7%AE%A1%E7%94%B5%E8%B7%AF%E5%9F%BA%E7%A1%80/">http://example.com/2024/07/18/%E6%99%B6%E4%BD%93%E7%AE%A1%E7%94%B5%E8%B7%AF%E5%9F%BA%E7%A1%80/</a>
+            <a href="http://example.com/mosis/4fadb416.html">http://example.com/mosis/4fadb416.html</a>
         </p>
         
     </div>
  
     <div class="post-footer__meta"><p>updated at 2024-07-21</p></div> 
-    <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a><a href="/tags/%E6%A8%A1%E6%8B%9F%E7%94%B5%E5%AD%90%E6%8A%80%E6%9C%AF/" class="post-tags__link button"># 模拟电子技术</a></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a></div> 
 </article>
 
 
     <div class="nav">
         <div class="nav__prev">
             
-                <a href="/2024/07/20/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/" class="nav__link">
+                <a href="/mosis/e6495819.html" class="nav__link">
                     <div>
                         <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M589.088 790.624L310.464 512l278.624-278.624 45.248 45.248L400.96 512l233.376 233.376z" fill="#808080"></path></svg>
                     </div>
@@ -191,13 +214,27 @@
                             Previous Post
                         </div>
                         <div class="nav__title">
-                            电源管理
+                            DDS信号发生器-AD9850
                         </div>
                     </div>
                 </a>
             
         </div>
         <div class="nav__next">
+            
+                <a href="/mosis/7b74146f.html" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            晶体管电路基础
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
             
         </div>
     </div>
