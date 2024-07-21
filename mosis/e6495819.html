@@ -32,7 +32,7 @@
 <title>DDS信号发生器-AD9834 | 苔的技术博客</title>
 
 
-    <meta name="keywords" content="电子设计, 电子模块, EE IC">
+    <meta name="keywords" content="电子模块, 电子设计, EE IC">
 
 
 
@@ -241,7 +241,7 @@ mjx-container[display="true"] + br {
 
     <aside class="post-side">
         <div class="post-side__toc">
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95DDS-Direct-Digital-Synthesis-%E7%9B%B4%E6%8E%A5%E6%95%B0%E5%AD%97%E9%A2%91%E7%8E%87%E5%90%88%E6%88%90-%E7%B3%BB%E7%BB%9F"><span class="toc-text">简单DDS(Direct Digital Synthesis,直接数字频率合成)系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E7%B4%AF%E5%8A%A0%E5%99%A8%E4%B8%8EDDS%E8%B0%83%E8%B0%90%E5%85%AC%E5%BC%8F"><span class="toc-text">相位累加器与DDS调谐公式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%87%E6%A0%B7%E4%B8%8E%E9%87%8F%E5%8C%96"><span class="toc-text">采样与量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%82%E6%95%A3"><span class="toc-text">杂散</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E5%B9%85%E5%BA%A6%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">相位幅度转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%A8%A1%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">数模转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%8F%A0"><span class="toc-text">混叠</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AD9850"><span class="toc-text">AD9850</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95DDS-Direct-Digital-Synthesis-%E7%9B%B4%E6%8E%A5%E6%95%B0%E5%AD%97%E9%A2%91%E7%8E%87%E5%90%88%E6%88%90-%E7%B3%BB%E7%BB%9F"><span class="toc-text">简单DDS(Direct Digital Synthesis,直接数字频率合成)系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E7%B4%AF%E5%8A%A0%E5%99%A8%E4%B8%8EDDS%E8%B0%83%E8%B0%90%E5%85%AC%E5%BC%8F"><span class="toc-text">相位累加器与DDS调谐公式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%87%E6%A0%B7%E4%B8%8E%E9%87%8F%E5%8C%96"><span class="toc-text">采样与量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%82%E6%95%A3"><span class="toc-text">杂散</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E5%B9%85%E5%BA%A6%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">相位幅度转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%A8%A1%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">数模转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%8F%A0"><span class="toc-text">混叠</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AD9834"><span class="toc-text">AD9834</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E4%BB%B6%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D"><span class="toc-text">元件基础介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E6%A1%86%E5%9B%BE"><span class="toc-text">功能框图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%84%9A%E8%AE%BE%E7%BD%AE"><span class="toc-text">引脚设置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E6%8B%9F%E4%BF%A1%E5%8F%B7%E5%92%8C%E5%9F%BA%E5%87%86%E7%94%B5%E5%8E%8B%E6%BA%90"><span class="toc-text">模拟信号和基准电压源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%B5%E6%BA%90"><span class="toc-text">电源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8E%A7%E5%88%B6"><span class="toc-text">数字接口和控制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-text">工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8E%A7%E6%8C%AF%E8%8D%A1%E5%99%A8%E5%92%8C%E7%9B%B8%E4%BD%8D%E8%B0%83%E5%88%B6%E5%99%A8"><span class="toc-text">数控振荡器和相位调制器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SIN-ROM"><span class="toc-text">SIN ROM</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8AD9850%E5%AE%9E%E7%8E%B0%E4%BF%A1%E5%8F%B7%E8%B0%83%E5%88%B6"><span class="toc-text">用AD9850实现信号调制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AM%E8%B0%83%E5%88%B6%EF%BC%88%E8%B0%83%E5%B9%85%EF%BC%89"><span class="toc-text">AM调制（调幅）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FSK%E8%B0%83%E5%88%B6%EF%BC%88%E9%A2%91%E7%8E%87%E9%94%AE%E6%8E%A7%EF%BC%89"><span class="toc-text">FSK调制（频率键控）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PSK%E8%B0%83%E5%88%B6%EF%BC%88%E7%9B%B8%E4%BD%8D%E9%94%AE%E6%8E%A7%EF%BC%89"><span class="toc-text">PSK调制（相位键控）</span></a></li></ol></li></ol></li></ol>
         </div>
     </aside>
     <a class="btn-toc button" id="btn-toc" tabindex="0">
@@ -251,7 +251,7 @@ mjx-container[display="true"] + br {
     </a>
     <div class="toc-menus" id="toc-menus">
         <div class="toc-title">Article Directory</div>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95DDS-Direct-Digital-Synthesis-%E7%9B%B4%E6%8E%A5%E6%95%B0%E5%AD%97%E9%A2%91%E7%8E%87%E5%90%88%E6%88%90-%E7%B3%BB%E7%BB%9F"><span class="toc-text">简单DDS(Direct Digital Synthesis,直接数字频率合成)系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E7%B4%AF%E5%8A%A0%E5%99%A8%E4%B8%8EDDS%E8%B0%83%E8%B0%90%E5%85%AC%E5%BC%8F"><span class="toc-text">相位累加器与DDS调谐公式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%87%E6%A0%B7%E4%B8%8E%E9%87%8F%E5%8C%96"><span class="toc-text">采样与量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%82%E6%95%A3"><span class="toc-text">杂散</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E5%B9%85%E5%BA%A6%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">相位幅度转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%A8%A1%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">数模转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%8F%A0"><span class="toc-text">混叠</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AD9850"><span class="toc-text">AD9850</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95DDS-Direct-Digital-Synthesis-%E7%9B%B4%E6%8E%A5%E6%95%B0%E5%AD%97%E9%A2%91%E7%8E%87%E5%90%88%E6%88%90-%E7%B3%BB%E7%BB%9F"><span class="toc-text">简单DDS(Direct Digital Synthesis,直接数字频率合成)系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E7%B4%AF%E5%8A%A0%E5%99%A8%E4%B8%8EDDS%E8%B0%83%E8%B0%90%E5%85%AC%E5%BC%8F"><span class="toc-text">相位累加器与DDS调谐公式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%87%E6%A0%B7%E4%B8%8E%E9%87%8F%E5%8C%96"><span class="toc-text">采样与量化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%82%E6%95%A3"><span class="toc-text">杂散</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E4%BD%8D%E5%B9%85%E5%BA%A6%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">相位幅度转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%A8%A1%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="toc-text">数模转换器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B7%E5%8F%A0"><span class="toc-text">混叠</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AD9834"><span class="toc-text">AD9834</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%83%E4%BB%B6%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D"><span class="toc-text">元件基础介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E6%A1%86%E5%9B%BE"><span class="toc-text">功能框图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%84%9A%E8%AE%BE%E7%BD%AE"><span class="toc-text">引脚设置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E6%8B%9F%E4%BF%A1%E5%8F%B7%E5%92%8C%E5%9F%BA%E5%87%86%E7%94%B5%E5%8E%8B%E6%BA%90"><span class="toc-text">模拟信号和基准电压源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%B5%E6%BA%90"><span class="toc-text">电源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8E%A7%E5%88%B6"><span class="toc-text">数字接口和控制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-text">工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8E%A7%E6%8C%AF%E8%8D%A1%E5%99%A8%E5%92%8C%E7%9B%B8%E4%BD%8D%E8%B0%83%E5%88%B6%E5%99%A8"><span class="toc-text">数控振荡器和相位调制器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SIN-ROM"><span class="toc-text">SIN ROM</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8AD9850%E5%AE%9E%E7%8E%B0%E4%BF%A1%E5%8F%B7%E8%B0%83%E5%88%B6"><span class="toc-text">用AD9850实现信号调制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AM%E8%B0%83%E5%88%B6%EF%BC%88%E8%B0%83%E5%B9%85%EF%BC%89"><span class="toc-text">AM调制（调幅）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FSK%E8%B0%83%E5%88%B6%EF%BC%88%E9%A2%91%E7%8E%87%E9%94%AE%E6%8E%A7%EF%BC%89"><span class="toc-text">FSK调制（频率键控）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PSK%E8%B0%83%E5%88%B6%EF%BC%88%E7%9B%B8%E4%BD%8D%E9%94%AE%E6%8E%A7%EF%BC%89"><span class="toc-text">PSK调制（相位键控）</span></a></li></ol></li></ol></li></ol>
     </div>
 
 
@@ -333,7 +333,174 @@ f_o = \frac{f_c\times B}{2^N}</script><p>此公式即为<strong><em>DDS调谐公
 <p><img src="/images/dds4.png" alt="图片"></p>
 <p><img src="/images/dds5.png" alt="图片"></p>
 <p><img src="/images/dds6.png" alt="图片"></p>
-<h2 id="AD9850"><a href="#AD9850" class="headerlink" title="AD9850"></a>AD9850</h2><p>即为一个集成的DDS系统。</p>
+<h2 id="AD9834"><a href="#AD9834" class="headerlink" title="AD9834"></a>AD9834</h2><h3 id="元件基础介绍"><a href="#元件基础介绍" class="headerlink" title="元件基础介绍"></a>元件基础介绍</h3><p>AD9834是一个集成的DDS系统。</p>
+<blockquote>
+<p>​    AD9834是一款75 MHz、低功耗DDS器件，能够产生高性能正弦波和三角波输出。其片内还集成一个比较器，支持产生方波以用于时钟发生。当供电电压为3 V时，其功耗仅为20 mW，非常适合对功耗要求严格的应用。<br>​    AD9834提供<strong>相位调制</strong>和<strong>频率调制</strong>功能。频率寄存器为28位；时钟速率为75 MHz，可以实现0.28 Hz的分辨率。同样，时钟速率为1 MHz时， AD9834可以实现0.004 Hz的分辨率。<strong>影响频率和相位调制的方法是通过串行接口加载寄存器，然后通过软件或FSELECT/PSELECT引脚切换寄存器。</strong><br>  AD9834通过一个三线式串行接口写入数据。该串行接口能够以最高40 MHz的时钟速率工作，并且与DSP和微控制器标准兼容。<br>  该器件采用2.3 V至5.5 V电源供电。模拟和数字部分彼此独立，可以采用不同的电源供电；例如， AVDD可以是5 V，而DVDD可以是3 V。<br>  AD9834具有控制休眠的引脚(SLEEP)，支持从外部控制断电模式。器件中不用的部分可以断电，以将功耗降至最低。例如，在产生时钟输出时，可以关断DAC。<br>  该器件采用20引脚TSSOP封装。</p>
+</blockquote>
+<h3 id="功能框图"><a href="#功能框图" class="headerlink" title="功能框图"></a>功能框图</h3><p>数据手册所示功能框图如下，红圈部分即是上文所述的，需要利用软件切换的寄存器之一。</p>
+<p><img src="/images/dds7.png" alt="图片"></p>
+<h3 id="引脚设置"><a href="#引脚设置" class="headerlink" title="引脚设置"></a>引脚设置</h3><p>引脚如下：</p>
+<p><img src="/images/dds8.png" alt="图片"></p>
+<p>各引脚功能如下：</p>
+<h4 id="模拟信号和基准电压源"><a href="#模拟信号和基准电压源" class="headerlink" title="模拟信号和基准电压源"></a>模拟信号和基准电压源</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>引脚编号</th>
+<th>引脚名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>FS ADJUST</td>
+<td>满量程调整控制。此引脚和AGND之间连接一个电阻(R<sub>SET</sub>)，从而决定满量程DAC电流的幅度。R<sub>SET</sub>与满量程电流之间的关系如下：IOUT<sub>FULL SCALE</sub> = 18 × FS ADJUST/R<sub>SET</sub>【FS ADJUST = 1.15 V(标称值)， R<sub>SET</sub> = 6.8 kΩ(典型值)】</td>
+</tr>
+<tr>
+<td>2</td>
+<td>REFOUT</td>
+<td>基准电压输出。AD9834通过此引脚提供1.20V内部基准电压源。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>COMP</td>
+<td>DAC偏置引脚。此引脚用于对DAC偏置电压进行去耦。</td>
+</tr>
+<tr>
+<td>17</td>
+<td>VIN</td>
+<td>比较器输入。可利用比较器从正弦DAC输出产生方波。DAC输出应经过适当滤波，然后再施加于比较器，以改善抖动性能。当控制寄存器中的Bit OPBITEN和Bit SIGN/PIB置1时，比较器输入端连接到VIN。</td>
+</tr>
+<tr>
+<td>19,20</td>
+<td>IOUT,IOUTB</td>
+<td>电流输出。这是高阻抗电流源。应在IOUT和AGND之间连接一个标称值为200 Ω的负载电阻。IOUTB最好应通过一个大小为200 Ω的外部负载电阻连接到AGND，但也可直接与AGND相连。此外还建议通过一个20 pF电容连接到AGND，以防出现<em>时钟馈通</em>。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>时钟馈通（Clock Feedthrough）是一种在数字电路中常见的问题，特别是在高速数字电路设计中。它通常发生在时钟信号的路径上，由于高速信号的快速切换，可能会产生一些不希望的信号传输或干扰。</p>
+</blockquote>
+<h4 id="电源"><a href="#电源" class="headerlink" title="电源"></a>电源</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>引脚编号</th>
+<th>引脚名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>AVDD</td>
+<td>模拟部分的正电源，范围是2.3V~5.5V。应在AVDD与AGND之间连接一个0.1μF去耦电容。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>DVDD</td>
+<td>数字部分的正电源，范围是2.3V~5.5V。应在DVDD与DGND之间连接一个0.1μF去耦电容。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>CAP/2.5V</td>
+<td>数字电路采用2.5V电源供电。当DVDD超过2.7 V时，此2.5 V利用片内调节器从DVDD产生，该调节器需要在CAP/2.5V至DGND之间连接一个典型值为100 nF的去耦电容；如果DVDD小于或等于2.7 V，则CAP/2.5 V应与DVDD直接相连。</td>
+</tr>
+<tr>
+<td>7</td>
+<td>DGND</td>
+<td>数字地。</td>
+</tr>
+<tr>
+<td>18</td>
+<td>AGND</td>
+<td>模拟地。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="数字接口和控制"><a href="#数字接口和控制" class="headerlink" title="数字接口和控制"></a>数字接口和控制</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>引脚编号</th>
+<th>引脚名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>MCLK</td>
+<td>数字时钟输入。 DDS输出频率是MCLK频率的一个分数，分数的分子是二进制数。输出频率精度和相位噪声均由此时钟决定。</td>
+</tr>
+<tr>
+<td>9</td>
+<td>FSELECT</td>
+<td>频率选择输入。 FSELECT控制相位累加器中使用的具体频率寄存器(FREQ0或FREQ1)。可使用引脚FSELECT或Bit FSEL来选择要使用的频率寄存器。使用Bit FSEL来选择频率寄存器时， FSELECT引脚应与CMOS高电平或低电平相连。</td>
+</tr>
+<tr>
+<td>10</td>
+<td>PSELECT</td>
+<td>相位选择输入。 PSELECT控制将增加到相位累加器输出的具体相位寄存器(PHASE0或PHASE1)。可使用引脚PSELECT或Bit PSEL来选择要使用的相位寄存器。当相位寄存器由Bit PSEL控制时， PSELECT引脚应与CMOS高电平或低电平相连。</td>
+</tr>
+<tr>
+<td>11</td>
+<td>RESET</td>
+<td>高电平有效数字输入。RESET可使相应的内部寄存器复位至0，以提供中间电平的模拟输出。 RESET不影响任何可寻址寄存器。</td>
+</tr>
+<tr>
+<td>12</td>
+<td>SLEEP</td>
+<td>高电平有效数字输入。当此引脚处于高电平时， DAC关断。此引脚功能与控制位SLEEP12相同。</td>
+</tr>
+<tr>
+<td>13</td>
+<td>SDATA</td>
+<td>串行数据输入。 16位串行数据字施加于此输入。</td>
+</tr>
+<tr>
+<td>14</td>
+<td>SCLK</td>
+<td>串行时钟输入。数据在每个SCLK下降沿逐个输入。</td>
+</tr>
+<tr>
+<td>15</td>
+<td>FSYNC</td>
+<td>低电平有效控制输入。这是输入数据的帧同步信号。当FSYNC变为低电平时，即告知内部逻辑，正在向器件中载入新数据字。</td>
+</tr>
+<tr>
+<td>16</td>
+<td>SIGN BIT OUT</td>
+<td>逻辑输出。比较器输出通过此引脚提供，或者可通过此引脚输出NCO的MSB。通过将控制寄存器中的Bit OPBITEN置1，可使能此输出引脚。 Bit SIGN/PIB确定通过该引脚输出的是比较器输出还是NCO（数控振荡器，用以生成特定频率与相位的正弦波）的MSB。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>在简单DDS系统的基础上，AD9834的内部电路包含：数控振荡器（NCO）、频率调制器、相位调制器、SIN ROM、DAC、比较器以及稳压器。</p>
+<h4 id="数控振荡器和相位调制器"><a href="#数控振荡器和相位调制器" class="headerlink" title="数控振荡器和相位调制器"></a>数控振荡器和相位调制器</h4><p>该子电路由两个频率选择寄存器、一个相位累加器、两个相位偏移寄存器和一个相位偏移加法器组成。 NCO的主要元件是一个28位相位累加器。连续时间信号的相位范围为0 π至2 π。在此数值范围之外，正弦函数以周期方式不断重复。</p>
+<p>因此，在AD9834中， 2π = 2<sup>28</sup>。同样， ΔPhase项也会扩大至此数值范围：0 &lt; ∆Phase &lt; 2<sup>28</sup>− 1<br>将这些带入前面的公式可得：<br>f<sub>o</sub> = ∆Phase × f<sub>MCLK</sub>/228<br>其中， 0 &lt; ∆Phase &lt; 228 − 1.<br>相位累加器的输入可以从FREQ0寄存器或FREQ1寄存器进行选择并由FSELECT引脚或FSEL bit控制。 NCO本身会产生连续相位信号，因此在频率之间切换时应避免出现任何输出不连续。<br>在NCO之后，可以使用12位相位寄存器添加一个相位偏移来执行相位调制。这些相位寄存器之一的内容会增加到NCO的MSB。 AD9834具有两个相位寄存器，且这两个寄存器的分辨率均为2π/2<sup>12</sup>。</p>
+<h4 id="SIN-ROM"><a href="#SIN-ROM" class="headerlink" title="SIN ROM"></a>SIN ROM</h4><p>要使用NCO的输出，必须先将其从相位信息转换成正弦数值。相位信息可以直接映射至幅度，因此SIN ROM可以将数字相位信息用作查找表的地址，并将相位信息转换成幅度。</p>
+<p>虽然NCO包含28位相位累加器，但NCO的输出会被截断至12位。使用相位累加器的全分辨率不仅不切实际，也根本不必要，因为这要求查找表具有2<sup>28</sup>个条目。只需具有足够的相位分辨率，使得因截断而产生的误差小于10位DAC的分辨率。这就要求SIN ROM的相位分辨率比10位DAC高出两位。<br>可使用控制寄存器中的OPBITEN和MODE bits来使能SIN ROM。</p>
+<h3 id="用AD9850实现信号调制"><a href="#用AD9850实现信号调制" class="headerlink" title="用AD9850实现信号调制"></a>用AD9850实现信号调制</h3><h4 id="AM调制（调幅）"><a href="#AM调制（调幅）" class="headerlink" title="AM调制（调幅）"></a>AM调制（调幅）</h4><p><em>—参考资料：<a target="_blank" rel="noopener" href="https://www.analog.com/media/cn/reference-design-documentation/reference-designs/cn0156_cn.pdf">cn0156_cn.pdf (analog.com)</a></em></p>
+<p>由引脚介绍可知，AD9834的FS ADJUST引脚（标称值，FS ADJUST = 1.15 V）用于控制满量程DAC输出电流的幅度，其一般做法是改变R<sub>SET</sub>的值，其标准值是6.8kΩ。</p>
+<p>但也可以用一个外围DAC电路来调制AD9834的幅度输出：</p>
+<p><img src="/images/dds9.png" alt="图片"></p>
+<p>参赛板上的外围DAC如图所示：</p>
+<p><img src="/images/dds10.png" alt="图片"></p>
+<p>其中DDS_AMP接在单片机的DAC输出引脚上。红圈框出的位置是一个<em>差分缓冲器（差分输入电压跟随器）</em>。</p>
+<h4 id="FSK调制（频率键控）"><a href="#FSK调制（频率键控）" class="headerlink" title="FSK调制（频率键控）"></a>FSK调制（频率键控）</h4><p>FSK是通过改变载波的频率来传输信息的一种调制方式。使用AD9834实现FSK的步骤如下：</p>
+<ul>
+<li><strong>设置两个频率</strong>：在AD9834中设置两个不同的频率寄存器，分别对应二进制”1”和”0”。</li>
+<li><strong>频率切换</strong>：根据要传输的数据，使用频率选择引脚或控制位在两个频率寄存器之间切换。</li>
+</ul>
+<h4 id="PSK调制（相位键控）"><a href="#PSK调制（相位键控）" class="headerlink" title="PSK调制（相位键控）"></a>PSK调制（相位键控）</h4><p>PSK是通过改变载波的相位来传输信息的一种调制方式。使用AD9834实现PSK的步骤如下：</p>
+<ul>
+<li><strong>设置频率</strong>：首先，设置AD9834的频率寄存器，以确定载波的基本频率。</li>
+<li><strong>相位调制</strong>：使用AD9834的相位调制功能，根据要传输的数据改变相位累加器的初始相位值。例如，数据”1”可以对应相位累加器增加一个特定的相位偏移，而数据”0”则不增加偏移。</li>
+</ul>
 
     </div>
     
@@ -351,12 +518,26 @@ f_o = \frac{f_c\times B}{2^N}</script><p>此公式即为<strong><em>DDS调谐公
     </div>
  
     <div class="post-footer__meta"><p>updated at 2024-07-21</p></div> 
-    <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a><a href="/tags/%E7%94%B5%E5%AD%90%E6%A8%A1%E5%9D%97/" class="post-tags__link button"># 电子模块</a></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E6%A8%A1%E5%9D%97/" class="post-tags__link button"># 电子模块</a><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a></div> 
 </article>
 
 
     <div class="nav">
         <div class="nav__prev">
+            
+                <a href="/mosis/e6495819.html" class="nav__link">
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M589.088 790.624L310.464 512l278.624-278.624 45.248 45.248L400.96 512l233.376 233.376z" fill="#808080"></path></svg>
+                    </div>
+                    <div>
+                        <div class="nav__label">
+                            Previous Post
+                        </div>
+                        <div class="nav__title">
+                            DDS信号发生器-AD9834
+                        </div>
+                    </div>
+                </a>
             
         </div>
         <div class="nav__next">
