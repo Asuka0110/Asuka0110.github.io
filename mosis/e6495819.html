@@ -485,15 +485,23 @@ f_o = \frac{f_c\times B}{2^N}</script><p>此公式即为<strong><em>DDS调谐公
 <h4 id="SIN-ROM"><a href="#SIN-ROM" class="headerlink" title="SIN ROM"></a>SIN ROM</h4><p>要使用NCO的输出，必须先将其从相位信息转换成正弦数值。相位信息可以直接映射至幅度，因此SIN ROM可以将数字相位信息用作查找表的地址，并将相位信息转换成幅度。</p>
 <p>虽然NCO包含28位相位累加器，但NCO的输出会被截断至12位。使用相位累加器的全分辨率不仅不切实际，也根本不必要，因为这要求查找表具有2<sup>28</sup>个条目。只需具有足够的相位分辨率，使得因截断而产生的误差小于10位DAC的分辨率。这就要求SIN ROM的相位分辨率比10位DAC高出两位。<br>可使用控制寄存器中的OPBITEN和MODE bits来使能SIN ROM。</p>
 <h3 id="用AD9850实现信号调制"><a href="#用AD9850实现信号调制" class="headerlink" title="用AD9850实现信号调制"></a>用AD9850实现信号调制</h3><h4 id="AM调制（调幅）"><a href="#AM调制（调幅）" class="headerlink" title="AM调制（调幅）"></a>AM调制（调幅）</h4><p><em>—参考资料：<a target="_blank" rel="noopener" href="https://www.analog.com/media/cn/reference-design-documentation/reference-designs/cn0156_cn.pdf">cn0156_cn.pdf (analog.com)</a></em></p>
-<p>由引脚介绍可知，AD9834的FS ADJUST引脚（标称值，FS ADJUST = 1.15 V）用于控制满量程DAC输出电流的幅度，其一般做法是改变R<sub>SET</sub>的值，其标准值是6.8kΩ。</p>
-<p>但也可以用一个外围DAC电路来调制AD9834的幅度输出：</p>
+<p>由引脚介绍可知，AD9834的FS ADJUST引脚（标称值，FS ADJUST = 1.15 V）是模拟输入端口，接受电流，用于控制满量程DAC输出电流的幅度，其一般做法是改变R<sub>SET</sub>的值，其标准值是6.8kΩ。</p>
+<p>但也可以用一个外围电路来调制AD9834的幅度输出，ADI官网有一份技术文档，使用的是可调的外围DAC电路：</p>
 <p><img src="/images/dds9.png" alt="图片"></p>
-<p>参赛板上的外围DAC如图所示：</p>
+<p>参赛板上的外围电路如图所示，是霍兰德电流源：</p>
 <p><img src="/images/dds10.png" alt="图片"></p>
-<p>其中DDS_AMP接在单片机的DAC输出引脚上。红圈框出的位置是一个<em>霍兰德电流源（压控恒流源）</em>。</p>
+<p>其中DDS_AMP接在单片机的DAC输出引脚上。</p>
 <blockquote>
-<p>—参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/shangxindewunai/article/details/103753112">Howland电流源-CSDN博客</a></p>
+<p>—参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/gxf0789/article/details/79796271">howland电流源公式推导-CSDN博客</a></p>
+<p><img src="/images/dds13.png" alt="图片"></p>
+<p><img src="/images/dds14.png" alt="图片"></p>
 </blockquote>
+<p>则霍兰德电流源的电流输出为：</p>
+<script type="math/tex; mode=display">
+I= \frac {(V2-V1)}{R3}</script><p>又由大板的电路图知：V2=DDS_AMP（接单片机PA6，DAC输出），V1=GND=0，R79=18kΩ。</p>
+<p>故有：</p>
+<script type="math/tex; mode=display">
+I_{FULLSCALE}=V_2/1000</script><p>其中V2即为单片机的DAC输出。</p>
 <h4 id="FSK调制（频率键控）"><a href="#FSK调制（频率键控）" class="headerlink" title="FSK调制（频率键控）"></a>FSK调制（频率键控）</h4><p>FSK是通过改变载波的频率来传输信息的一种调制方式。使用AD9834实现FSK的步骤如下：</p>
 <ul>
 <li><strong>设置两个频率</strong>：在AD9834中设置两个不同的频率寄存器，分别对应二进制”1”和”0”。</li>
@@ -520,7 +528,7 @@ f_o = \frac{f_c\times B}{2^N}</script><p>此公式即为<strong><em>DDS调谐公
         
     </div>
  
-    <div class="post-footer__meta"><p>updated at 2024-07-21</p></div> 
+    <div class="post-footer__meta"><p>updated at 2024-07-22</p></div> 
     <div class="post-entry__tags"><a href="/tags/%E7%94%B5%E5%AD%90%E6%A8%A1%E5%9D%97/" class="post-tags__link button"># 电子模块</a><a href="/tags/%E7%94%B5%E5%AD%90%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 电子设计</a></div> 
 </article>
 
