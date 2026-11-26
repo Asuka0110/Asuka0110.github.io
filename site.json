@@ -1,0 +1,565 @@
+{
+  "profile": {
+    "name": "自留地",
+    "subtitle": "Per aspera ad astra",
+    "heading": "永远不要选择湖泊而放弃大海。",
+    "intro": "这里是 mosi，数字IC方向，研零在读。观鸟/写作/数字IC/芯片架构/AI infra自学中。",
+    "signature": "循此苦旅，直抵繁星。",
+    "about": "INTJ / She / Le / Tritpe = 854。\n\n上海交通大学 · 微电子科学与工程 · 大四。\n\n在这里记录学习与生活。\n\n## 教育与研究\n- 上海交通大学 · 微电子科学与工程 · 本科（2023.09—2027.06）\n- 先进计算专班硕士（拟），预计 2027.09 入学\n\n## 经历的关键词\n- FPGA / CPU / NPU 异构计算与软硬件协同\n- 模型端侧适配、混合精度量化与推理性能优化\n- SystemC、NoC 与负载感知任务调度\n- 数字 IC 前端、板级电路与原型验证\n\n## 竞赛与荣誉\n- 2026 年集创赛复旦微电子企业赛道，全国总决赛二等奖、华东分赛区一等奖\n- 2025 年全国大学生电子设计竞赛，全国二等奖\n- 2025 年 TI 杯全国大学生电子设计竞赛，上海赛区一等奖\n- 2024 年 TI 杯全国大学生电子设计竞赛，上海赛区二等奖\n- 上海交通大学本科生 B 等优秀奖学金（2024—2025 学年）\n- 上海交通大学本科是 C 等优秀奖学金（2025-2026 学年）\n\n代码之外，我也想为自设、喜欢的画面，以及随笔和日记留一处位置。这个博客会随着学习与生活慢慢生长。",
+    "tags": [
+      "INTJ · She · Le",
+      "高性能计算",
+      "AI Infra · 探索中"
+    ],
+    "stack": [
+      "Verilog / RTL",
+      "Vivado",
+      "ModelSim",
+      "C / C++",
+      "Python",
+      "Linux",
+      "SystemC",
+      "RISC-V / NoC",
+      "FPGA + CPU + NPU",
+      "模型部署与量化",
+      "KV Cache",
+      "AXI / DDR",
+      "PCB 与原理图",
+      "板级调试"
+    ],
+    "github": "https://github.com/Asuka0110",
+    "heroImage": "/uploads/window-light.jpg",
+    "avatar": "/uploads/oc-portrait.png"
+  },
+  "posts": [],
+  "projects": [
+    {
+      "id": "fudan-moe",
+      "title": "MoE 硬算子与异构推理加速",
+      "kind": "实习经历",
+      "period": "2026.09 — 至今",
+      "summary": "面向 MoE 推理的 FPGA 路由与页表更新控制。将 BF16 专家选择、Softmax、上下文缓存、映射更新与启动握手串联，减少 CPU 逐步介入的控制过程。",
+      "tags": [
+        "MoE 路由",
+        "BF16 Top-K",
+        "Softmax",
+        "AXI",
+        "RTL"
+      ],
+      "body": "## 目标与个人职责\n实习工作面向 MoE 推理中的控制与数据交互开销，尝试将专家路由和页表准备过程移到 FPGA，缩短 CPU 逐环节参与的控制链。这里的硬件模块处理路由与映射，不据此声称已经实现整个专家网络的矩阵计算。\n我独立完成模块划分、接口与 RTL 实现，并设计 PS 启动控制。以下结合 19 个 Verilog 模块说明路由、映射和启动控制的实现。\n## 从门控 logits 到专家权重\n解码入口读取 BF16 logits，默认从 256 个专家中选择 8 个。Top-K 使用候选表保留较优元素，扫描阶段替换当前最差项，随后单独排序输出。比较树分级寄存，避免一次跨越多个 BF16 比较级；比较函数还处理 NaN、正负零和相同分数时的 ID 次序。\nSoftmax 路径对选中 logits 做最大值处理、定点差值、指数因子查表与倒数近似，再输出权重。倒数近似使用两轮 Newton-Raphson 更新。它包含定点与近似运算，数值误差仍需要对照软件参考与边界样本测量。\n## 将解码与提交分开\n纯逻辑顶层支持三种命令：仅解码、提交先前缓存的上下文、解码并提交。缓存用 route ID 和 context tag 标识请求，默认深度为 1，并在消费后清除对应有效标记。\n这种分离让路由结果的产生与后续页表更新具有明确边界。缓存未命中、路由元数据无效与配置错误通过状态输出反馈，不能把错误请求继续当作有效任务启动。\n## 路由元数据与映射生成\n映射引擎按专家 ID、参数组基址与步长计算目标页，默认覆盖 8 个 slot、3 组参数，共 24 项更新。源码先计算整批映射，再暴露第一项写出，期间检查专家范围、页计算溢出、目标 chunk 范围和页表基址对齐。\n元数据中的页以 256 字节为单位，目标页表项按 32bit 条目生成地址。路由配置表、目标 chunk 表和上下文缓存分别承担静态元数据、目标槽位与当前解码结果的管理。\n## AXI 回写完成后再启动 NPU\n| 阶段 | 主要动作 | 完成或错误边界 |\n| --- | --- | --- |\n| 数据读取 | AXI 从 DDR 读取 logits，或走外部 logits 读口 | 读取响应与填充状态 |\n| 解码 | Top-K 与 Softmax，得到专家 ID 和权重 | decode valid / busy |\n| 映射 | 预计算并检查整批页表项 | map done / error |\n| 回写 | 串行提交更新，逐项等待 AXI 写响应 | 响应错误阻止提交 |\n| 失效确认 | 发起 XMMU invalidate 并等待反馈 | 确认成功才拉起 commit / npu_start |\n更新提交模块不会仅因写请求已经发出就启动 NPU，而是等待全部预期写响应成功，再等待失效完成反馈。中间错误会阻止后续启动；这不意味着已经写出的页表项具有自动回滚能力。\n## 配置与性能观测\n顶层提供 AXI/AXI-Lite 集成边界、状态寄存器、配置指令加载器，以及总流程、读取、解码和提交的分阶段周期计数。配置加载路径从 DDR 读取固定宽度指令，并限制未完成读事务，便于控制与数据路径仲裁。\n简历记录在 375MHz 目标时钟下完成时序收敛。当前压缩包只有 RTL，没有与之配套的时序报告、资源利用率、测试平台或端到端对比数据，因此本页保留该经历信息，并不将它标注为本轮复测结果。\n## 后续补充的验证证据\n适合继续整理的证据包括 Top-K/Softmax 与软件参考的误差分布、缓存命中/未命中、AXI 背压与错误响应、无效 route/chunk、失效失败，以及综合时序和上板启动链路。当前文件中的 XMMU 命名与简历 MMAU 术语也需要统一。",
+      "status": "实习进行中 · RTL 结构已核对",
+      "metrics": [
+        {
+          "value": "256 → 8",
+          "label": "默认专家选择规模",
+          "note": "RTL 参数：256 个候选，选择 Top-8"
+        },
+        {
+          "value": "24 项",
+          "label": "默认一批页表更新",
+          "note": "8 个 slot × 3 组参数元数据"
+        },
+        {
+          "value": "3 种模式",
+          "label": "解码与提交控制",
+          "note": "仅解码 / 提交缓存 / 解码并提交"
+        }
+      ],
+      "sources": [
+        {
+          "title": "rtl.zip 中的 19 个 Verilog 模块",
+          "detail": "静态核对路由、数值近似、上下文缓存、映射、AXI 读写及完成握手；不发布原始企业源码。"
+        },
+        {
+          "title": "个人简历",
+          "detail": "独立接口与 RTL 实现、PS 启动控制及 375MHz 时序目标来自个人经历记录。压缩包没有提供 testbench 或时序报告，本轮未做仿真或时序复测。"
+        },
+        {
+          "title": "命名与材料范围",
+          "detail": "本页按 RTL 中的 XMMU 命名描述页表路径；简历中的 MMAU 命名待统一。另一个 Vivado 视频工程不作为 MoE 实现依据。"
+        }
+      ],
+      "flow": {
+        "title": "路由与映射控制链",
+        "caption": "默认配置用于解释结构规模。周期计数、数值误差与上板性能还需要配套实验记录。",
+        "stages": [
+          {
+            "label": "DECODE",
+            "title": "专家选择与权重",
+            "detail": "读取 logits，执行 BF16 Top-K 与 Softmax，生成带 tag 的路由上下文。"
+          },
+          {
+            "label": "MAP",
+            "title": "整批映射准备",
+            "detail": "根据 route 元数据计算 slot/参数组页表项，完成范围、溢出与对齐检查。"
+          },
+          {
+            "label": "COMMIT",
+            "title": "回写、失效与启动",
+            "detail": "等待 AXI 成功响应与失效完成，再发出提交和 NPU 启动信号。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sign-language",
+      "title": "SignBridge · 端到端实时手语翻译系统",
+      "kind": "科研与竞赛",
+      "period": "2026.03 — 2026.09",
+      "summary": "在 FPAI 平台上连接视频采集、姿态估计、Uni-Sign/mT5 与显示，结合 CPU、FPGA、NPU 分工，完成端侧模型适配、Host KV Cache、自动动作分段与性能观测。",
+      "tags": [
+        "异构计算",
+        "端侧推理",
+        "KV Cache",
+        "C++17",
+        "模型量化"
+      ],
+      "body": "## 项目与个人职责\nSignBridge 面向连续手语与中文文本的端侧交互，同时在竞赛系统中加入语音转文字通路。系统运行在复旦微 FPAI 异构平台，视频输入与显示采用 1080p@60Hz。这里的 60Hz 是视频接口速率，片段翻译另按延时统计。\n我的工作主要覆盖异构平台部署与模型适配、混合精度方案、FFT 硬算子和端侧推理优化。作为团队项目，以下结合完整系统链路介绍实现与测试记录。\n## 手语链路如何拆分\n- FPGA：接收 SDI 视频，完成图像格式转换、缩放裁剪、帧缓存和 HDMI 显示链路。\n- NPU：执行 RTMPose 主干、Visual Encoder、mT5 Encoder、Decoder 与 LM Head 等计算密集型子图。\n- CPU：执行 RTMPose Tail、SimCC 坐标解码、姿态归一化、分段状态机、KV Cache 维护、token 选择和系统调度。\n源码中的姿态模型输出 133 个关键点，选取身体 9 点、左手 21 点、右手 21 点、面部 18 点，共 69 点；按固定 90 帧窗口送入 Visual Encoder，得到 90×768 特征，并与 8 个任务提示嵌入共同组成后续上下文。\n## 适配受限的 NPU 工具链\n模型输入固定为 90 帧，消除依赖运行时维度的动态 Shape 链。姿态主干留在 NPU，不支持的 Tail 子图和 SimCC 解码移到 CPU。竞赛文档还记录了激活函数替换、归一化计算改写与 Zipformer 的计算图重构。\n这些改写需要逐项验证数值与最终翻译效果；激活函数替换具有近似性，归一化改写也受 epsilon 和低精度计算影响，不能直接视为所有输入上的无损等价。\n## 按子模型选择量化精度\n技术文档使用 CSL-Daily 测试集前 100 条关键点 PKL 输入进行 iCraft 仿真，逐次只改变一个子模型精度。以下 BLEU-4 是该组实验记录，不等于实时相机输入的板端精度。\n| 子模型 | BF16 BLEU-4 | INT8 BLEU-4 | 文档采用的精度 |\n| --- | --- | --- | --- |\n| Visual Encoder | 26.469 | 25.010 | BF16 |\n| mT5 Encoder | 26.469 | 0.142 | BF16 |\n| mT5 Decoder | 26.469 | 0.085 | BF16 |\n| LM Head | 26.469 | 26.727 | INT8 |\nRTMPose 另通过输出数值误差对比选择 FP16。LM Head 的小幅指标波动不能证明 INT8 提升了模型能力；这组实验的用途是确定可接受的部署精度。\n## Host 管理的 KV Cache\n当前运行时按层在 CPU 内存中维护历史 K/V。12 层、12 头、最大生成长度 30、单头维度 64，FP32 缓存共 552,960 个 float，约 2.11 MiB。每个新样本开始时清零缓存，每步只更新新位置。\n这减少了重复计算，同时引入 Host Tensor 组织、缓存读写和 CPU/NPU 交互开销。源码中可以核对按层缓存更新与 decoder-kv 前向调用；缓存并非常驻 NPU 内更新。\n## 连续动作分段与资源调度\n自动分段综合手部关键点有效率、按人体尺度归一化的运动强度和连续帧确认，使用待机、监听、采集、结束补帧和翻译等状态衔接。默认配置还包含预卷帧、后卷帧、最短/最长片段和片段质量过滤。\n采集、推理、后处理和显示通过 Actor 消息与缓存池连接。当前代码使用 4 个图像 Buffer、全局 NPU 前向互斥锁和翻译运行标志，限制并发访问与任务堆积。性能探针输出分阶段耗时、进程内存及估算流量，Web 控制台读取 CSV 展示运行情况。\n## 语音与 FPGA 前处理\n技术文档记录了 16kHz、16bit 单声道 PCM 通路：CPU 分帧和加窗后，调用 PL 侧 512 点定点 FFT；CPU 继续完成功率谱、Mel 与对数运算，构成 80 维 FBank，再进入 Zipformer 流式推理和 CTC 解码。\n文档使用 77 帧推理块、64 帧滑动步长，并维护流式历史状态。当前提供的 uni202604 主工程以手语链路为主，因此这部分按文档说明，不标记为本轮源码全链路验证。\n## 性能记录与版本差异\n国赛技术文档第 6 章记录的一次翻译使用 90 帧片段、生成 9 个 token：\n| 阶段 | 本次记录 | 统计范围 |\n| --- | --- | --- |\n| Visual Encoder | 309.87 ms | 整个 90 帧片段 |\n| mT5 Encoder | 53.31 ms | 单次前向 |\n| Decoder-KV | 423.06 ms | 9 token 的前向累计 |\n| LM Head | 24.24 ms | 本次生成的前向累计 |\n| 单次片段翻译 | 1,210.80 ms | 片段进入翻译至文本输出 |\n| VmRSS / VmHWM | 609.117 / 765.172 MB | 常驻 / 运行峰值物理内存 |\n不同阶段的读取、调度与 CPU 处理未全部列在这张表中，不能将四个前向耗时简单相加当作完整延时。\n答辩材料另记录词表从 250,112 裁至 22,853，以及 LM Head 的阶段加速结果；而此次查看的默认配置仍为 250,112。这里把词表裁剪作为竞赛材料记录的优化方案，不宣称当前检视的默认运行时已经启用裁剪版。\n原材料中的 638.43M 表示总参数量，1.31GB 表示部署前体积；两者不能组成存储压缩前后对比。不同版本的延时也不拼接成同一条测试结论。\n## 接下来值得继续研究\n关注 Host/NPU 交互、KV Cache 搬运和实际阶段耗时之间的关系，并补充可复现的版本号、模型配置、输入集合与测量边界。自动分段鲁棒性、词表映射版本统一和多输入模式精度对齐，也适合作为后续技术笔记展开。",
+      "status": "竞赛项目 · 持续迭代",
+      "metrics": [
+        {
+          "value": "90 帧",
+          "label": "固定姿态输入窗口",
+          "note": "模型输入窗口，不等于 90 FPS"
+        },
+        {
+          "value": "1,210.80 ms",
+          "label": "文档中的一次片段翻译",
+          "note": "90 帧输入、生成 9 token；不含动作采集"
+        },
+        {
+          "value": "609.117 MB",
+          "label": "同次记录的 VmRSS",
+          "note": "进程常驻内存，非模型文件体积"
+        }
+      ],
+      "sources": [
+        {
+          "title": "决赛答辩材料",
+          "detail": "第 11—24 页：模型规模、适配策略、精度配置、KV Cache 和词表裁剪的阶段结果。"
+        },
+        {
+          "title": "国赛技术文档初稿",
+          "detail": "第 2—3 章：架构与实现；第 6 章：一次片段性能记录、内存与不同输入的评测结果。"
+        },
+        {
+          "title": "uni202604 当前源码与配置",
+          "detail": "已核对主运行时、默认配置与 Web 控制台代码；本轮未连接开发板或重新运行推理基准。"
+        }
+      ],
+      "flow": {
+        "title": "CPU、FPGA 与 NPU 的分工",
+        "caption": "视频接口速率、片段翻译耗时和语音流式通路分别统计。",
+        "stages": [
+          {
+            "label": "FPGA / PL",
+            "title": "视频与前处理",
+            "detail": "SDI 接收、格式转换、缩放裁剪与显示；语音通路在文档中使用 FFT 硬算子。"
+          },
+          {
+            "label": "NPU",
+            "title": "模型主干与生成",
+            "detail": "姿态主干、Visual Encoder、mT5 编码解码与 LM Head，按资源约束分配精度。"
+          },
+          {
+            "label": "CPU / PS",
+            "title": "动态控制与后处理",
+            "detail": "Tail/SimCC、分段状态机、Host KV Cache、token 解码、调度与性能探针。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "heterogeneous-soc",
+      "title": "面向动态负载的多核异构 SoC 计算优化",
+      "kind": "科研与竞赛",
+      "period": "2026.09 — 至今",
+      "summary": "本科毕设进行中。已完成 RISC-V 单/四核 TLM 测试与 gem5 接入，以及 AirSim—SystemC 采样控制闭环；正在为后续异构 SoC、片上互连和动态负载调度研究搭建可验证的实验平台。",
+      "tags": [
+        "SystemC / TLM",
+        "RISC-V",
+        "gem5",
+        "AirSim",
+        "系统仿真"
+      ],
+      "body": "## 研究目标与当前阶段\n毕设目标是面向动态负载研究多核异构 SoC 的计算资源分配、通信开销与访存约束。当前工作集中在可运行、可检查的系统仿真平台：一条是 RISC-V/总线/内存基础验证，另一条是 AirSim 与 SystemC 控制器的闭环联调。\n平台复用已有 RISC-V 模型与仿真依赖，当前工作重点是接入、跨系统通信和实验验证。后续体系结构与调度研究建立在这些基础链路之上。\n## RISC-V 与 TLM 基础拓扑\n现有 smoke test 实例化 1 或 4 个 CPURV32，通过 BusCtrl 的 TLM blocking transport 访问共享 Memory。四核具有 8 个总线输入端口，对应各核的指令与数据访问，并通过 mhartid 区分核身份。\n该拓扑已经接入 gem5 自带的 SystemC/TLM 内核与事件调度器，使用 EXTRAS 编译模型源码，保持原独立测试入口可用。这里运行的是模型自己的 RV32 指令，不等于已经把模型接入 gem5 原生 CPU、Ruby/Garnet 或 DRAM 控制器。\n## 用正向与反向检查确认接入有效\n- 单核：执行加法，检查 x7=3，并通过 BREAK 结束。\n- 四核：每核向共享内存写入 hartid+1，检查结果 1、2、3、4。\n- 反向检查：故意给四核加载单核固件，预期返回失败，确认检查器能识别错误。\n- 回归：保留 gem5 原生 X86 Hello World 的运行检查。\n接入说明保存的结果为单核 30ns、四核 190ns。这是配置模型的仿真时间；CPU 目前采用固定指令时间，不能直接当作真实芯片的执行时延或性能对比。\n## AirSim 与 SystemC 的采样闭环\n当前联调由 Windows 运行 Blocks/Project AirSim，Windows Python 分发器通过 SSH 的标准输入输出与 Ubuntu 中的 SystemC 模型交换逐行 JSON。较早阶段汇报使用 Fedora WSL，当前 README 已迁移为 Ubuntu 虚拟机方案。\n每一步暂停 AirSim、读取位姿，将当前位置、目标点、控制参数和步号发给模型；SystemC 推进仿真时间并计算带限幅的比例位置控制速度，再由 Python 校验步号、有限值与速度范围，恢复 AirSim 并执行速度指令。\n这种同步方式隔离了跨进程计算期间的环境运动，但两套仿真器并没有严格统一的周期时钟。日志分别保留 AirSim 时间、SystemC 仿真时间和控制器墙钟耗时。\n## 已保存的闭环验证结果\n| 模式 | 连续步数 | 初始位置误差 | 最终位置误差 | SystemC 时间 | AirSim 控制时间跨度 |\n| --- | --- | --- | --- | --- | --- |\n| 独立 SystemC | 100 | 2.42316 m | 0.05410 m | 10 s | 10.821 s |\n| gem5 内 SystemC | 100 | 2.42316 m | 0.00405 m | 10 s | 10.326 s |\n两个验收摘要均记录 COSIM_PASS。这里呈现各自配置下的控制 demo 结果；没有据此比较 gem5 与独立 SystemC 的运行速度或控制算法优劣。\n协议测试覆盖启动横幅、超时、旧步号、NaN 与超限速度。8 步 SystemCOnly 模式使用积分器替代环境，仅用于通信测试，不充当真实 AirSim 飞行验收。\n## 当前边界与下一步\n当前 CPU 互连是地址译码总线，尚没有 Mesh 路由器、链路竞争、虚拟通道或自适应路由。AirSim 当前运行的比例控制器也尚未由 RV32 固件执行。\n下一步需要定义传感器与执行器的 MMIO/mailbox、任务固件、完成中断与超时，再把环境请求写入 SoC 模型并读取输出。真正开展负载感知调度前，还需补充逐核统计、任务边界、网络与访存模型，评估 DMI 对通信时序观测的影响。\nRAD-Sim、SystemC 等目录中的依赖和示例是研究环境的一部分，不能据目录存在便声称已集成到上述闭环。",
+      "status": "本科毕设 · 阶段验证",
+      "metrics": [
+        {
+          "value": "1 / 4 核",
+          "label": "RV32 基础拓扑验证",
+          "note": "地址译码总线 + 共享内存"
+        },
+        {
+          "value": "100 步",
+          "label": "保存的闭环验收记录",
+          "note": "独立 SystemC 与 gem5/SystemC 两种模式"
+        },
+        {
+          "value": "0.00405 m",
+          "label": "gem5 模式的末端位置误差",
+          "note": "一次控制 demo 记录，非处理器性能指标"
+        }
+      ],
+      "sources": [
+        {
+          "title": "AirsimSystemCProject README 与控制器源码",
+          "detail": "当前 Windows + Ubuntu 联调方式、比例控制、逐行 JSON 协议与同步边界。"
+        },
+        {
+          "title": "2026-11-24 / 25 验收摘要与飞行日志",
+          "detail": "两份 COSIM_PASS 摘要及原始 JSONL 记录；本轮核对保存记录，未重新启动无人机仿真。"
+        },
+        {
+          "title": "chiplet_system01 的 gem5 接入说明与测试",
+          "detail": "单/四核拓扑、共享内存结果、故意错误固件的反向检查和尚未接入的模块。"
+        },
+        {
+          "title": "AirSim/SystemC 阶段汇报",
+          "detail": "早期 WSL 方案与阶段边界；当前部署方式以较新的 README 为准。"
+        }
+      ],
+      "flow": {
+        "title": "当前独立验证的两条链路",
+        "caption": "下一步再定义 MMIO/mailbox、固件任务与中断，将两条链路接起来；NoC 和负载调度属于后续研究。",
+        "stages": [
+          {
+            "label": "SOC 基础",
+            "title": "RV32 / 总线 / 内存",
+            "detail": "单核与四核 TLM 拓扑、共享内存检查、gem5 接入与错误固件反向检查。"
+          },
+          {
+            "label": "控制闭环",
+            "title": "AirSim / Python / SystemC",
+            "detail": "位姿请求、带限幅比例控制、逐步校验、环境反馈与独立时钟日志。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "edge-home-agent",
+      "title": "基于 A210 的智能家居边缘视觉 Agent",
+      "kind": "科研与竞赛",
+      "period": "2026.07",
+      "summary": "A210 板端 YOLO 感知、Python Function Calling Agent 与 VirtualHome 的闭环原型。通过统一四房间状态快照、动态监控规则、SQLite 记忆和命令队列 ACK，连接感知、决策与可视化反馈。",
+      "tags": [
+        "A210",
+        "YOLO11 / Pose",
+        "Function Calling",
+        "SQLite",
+        "VirtualHome"
+      ],
+      "body": "## 项目与个人职责\n夏令营团队项目面向智能家居视觉 Agent 原型。在 A210 上部署 YOLO11 和 YOLO11-pose，将人员、宠物与姿态结果转换为结构化房间状态，再由 Python Agent 与事件引擎产生问答、提醒和环境控制。\n我负责端侧部署与云边协同，并参与 Unity/VirtualHome 场景、Web 展示和全系统流程调试。以下从团队系统的完整链路展开。\n## 从视频帧到统一房间状态\nVirtualHome/PC 通过 TCP 发送 JSON 头与 JPEG 数据，头中包含 room、frame_id、timestamp_ms 和数据长度。A210 C++ 服务解码和预处理图像，在 NPU 上运行目标检测主干，CPU 执行 NMS、关键点解析和疑似跌倒判定。\n姿态模型按房间与人员检测结果启用，重点覆盖卧室、卫生间。跌倒提示由人体框比例与姿态关键点构成启发式判断，属于疑似事件检测，不作为经过可靠性认证的看护能力。\n输出使用统一四房间 JSON 契约，包括人数、猫狗数量、fall_like 等字段。写入采用临时文件加原子替换，避免 Agent 在文件写到一半时读到不完整状态。\n## 感知与决策之间的 Tool 边界\n- capture_image：取得帧信息，按模式读取缓存或主动采集。\n- run_detection：将 real、virtualhome 和 mock 三种后端统一为结构化检测结果。\n- make_decision：写入决策与告警，触发后续环境反馈。\n- control_virtualhome：把灯光、音乐等指令转换为待执行动作。\n- add_monitor_rule 与规则管理工具：把用户描述转成持久化 when 条件。\n调度器使用 OpenAI 兼容的 Function Calling 协议。团队文档要求状态或安全类问答先调用 run_detection，使回答参考当前快照；该约束属于调度策略，不视为对大模型回答正确性的形式化保证。\n## 动态规则与无云降级\n高频视觉推理和基础规则留在端侧，云端模型承担低频自然语言理解、规则解析及异常复核。未配置密钥、网络失败或 API 异常时，系统降级到本地意图解析与规则引擎。\n后台事件引擎轮询快照并匹配规则，并按规则/房间的持续命中状态去重；Web 异常通知设有 60 秒冷却。无人关灯在曾有人后连续多次确认无人，再生成一次控制，避免重复入队。home/away 模式用于调整安防场景的规则。\n## 可追溯的反馈闭环\nSQLite 保存 decisions、events、conversations、rules 和 settings。源码中的控制队列另以 JSONL 文件持久化，使用线程锁及临时文件替换；它与 SQLite 记忆库是两个存储边界。Agent 决策写入 pending 控制队列；PC bridge 轮询取命令，调用 Unity/VirtualHome 接口执行，随后 ACK。\n该设计将决策、传输与动作执行分开，便于跟踪未确认命令和恢复联调。仅凭 ACK 机制还不能推断任意网络故障下都恰好执行一次，实际还需核对重试与动作幂等策略。\n## 演示范围与验证记录\n| 场景 | 文档中的实现或输入 | 展示边界 |\n| --- | --- | --- |\n| 人员计数、宠物留守 | YOLO 结果与四房间快照 | 基于检测结果触发规则 |\n| 疑似跌倒 | Pose 关键点与人体框启发式 | 原型级判断，需扩展实测 |\n| 无人关灯 | 曾有人后连续确认无人 | VirtualHome 动作反馈 |\n| 离家陌生人告警 | home/away 规则与外部 unknown_person 状态 | 当前 C++ 该字段默认 false，未实现真实身份识别 |\n| 火灾烟雾 | hazard_detected 外部状态 | 真实检测模型或传感器待接入 |\n| 健康助手 | 仿真健康事件与环境联动 | 真实健康设备待接入 |\n文档列出七类演示场景，并记录实机连续运行 2 小时未出现问题；VirtualHome 流参数为 720p/10fps。这些分别是演示范围、团队稳定性记录和输入流参数，不代表全部视觉模型的实测推理帧率。\n## 部署与进一步完善\n服务边界包括板端 TCP 感知服务、Python Agent/Web 服务、SQLite 存储和 PC bridge。Web 页面提供房间状态、问答、规则、历史、控制队列及确认状态；Flask 缺失时文档提供标准库 HTTP 服务降级方案。\n进一步可记录模型与接口版本，补充不同光照/遮挡下的检测评估、断网和重复命令故障注入，并将模拟风险信号与真实传感器输入清楚区分。\n## 与交付源码对应的实现范围\n此次安装包包含 Python Agent、状态后端、动态规则、JSONL 队列、SQLite 记忆、HTTP 服务和 PC 控制桥接源码，可以逐项对应上述接口与降级路径。板端视觉程序以可执行文件交付，没有附带完整 C++ 源码；感知端的原子快照、房间归一化和默认状态字段按配套契约与改动说明记录。包内的房间名来自帧头，不是模型自动识别房间。",
+      "status": "夏令营项目 · Python 与桥接源码已核对",
+      "metrics": [
+        {
+          "value": "4 个房间",
+          "label": "统一状态契约",
+          "note": "客厅、卧室、厨房、卫生间"
+        },
+        {
+          "value": "7 类场景",
+          "label": "技术文档列出的演示",
+          "note": "部分风险与健康信号由仿真注入"
+        },
+        {
+          "value": "2 小时",
+          "label": "文档记录的实机稳定运行",
+          "note": "团队记录，本轮未独立复测"
+        }
+      ],
+      "sources": [
+        {
+          "title": "第三队技术文档",
+          "detail": "架构、Tool 契约、数据流、四房间状态、部署与演示范围。"
+        },
+        {
+          "title": "创芯项目实训答辩材料",
+          "detail": "方案与展示内容交叉核对；Python 实现已用补充安装包核对，C++ 全文和实际板端运行未在本轮复核。"
+        },
+        {
+          "title": "个人简历",
+          "detail": "个人职责为端侧模型部署与云边协同，并参与虚拟家居场景和系统展示调试。"
+        },
+        {
+          "title": "torq_agent-butler_demo 安装包",
+          "detail": "核对 Python Agent、规则引擎、SQLite、JSONL 命令队列、Web 与 PC bridge。包中包含板端可执行文件，但没有 C++ 源码目录，C++ 细节依据快照契约和改动说明。"
+        }
+      ],
+      "flow": {
+        "title": "从端侧感知到环境反馈",
+        "caption": "SQLite 保存记忆与规则，JSONL 文件保存控制命令；真实检测与仿真注入信号分开说明。",
+        "stages": [
+          {
+            "label": "PERCEPTION",
+            "title": "帧输入与房间快照",
+            "detail": "PC/VirtualHome 送帧，A210 输出统一四房间状态，按契约作原子替换。"
+          },
+          {
+            "label": "DECISION",
+            "title": "Agent / Tool / 规则",
+            "detail": "读取快照、工具调度、本地降级、状态去重与持久化记忆。"
+          },
+          {
+            "label": "FEEDBACK",
+            "title": "pending / 执行 / ACK",
+            "detail": "PC bridge 轮询 JSONL 命令队列，作用于环境后回传执行状态。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stacked-power",
+      "title": "先进芯片堆叠供电原型验证",
+      "kind": "实习经历",
+      "period": "2025.10 — 2026.02",
+      "summary": "上海交通大学集成电路学院蒋剑飞老师课题组科研实习。参与芯片堆叠供电方案验证，独立完成原型 PCB 设计、打板与硬件验证。",
+      "tags": [
+        "SoC",
+        "LDO",
+        "PCB",
+        "原型验证"
+      ],
+      "body": "## 研究背景\n参与先进芯片堆叠供电方案的硬件验证，分析 SoC 芯片堆叠结构中的供电电位失衡问题。\n## 方案与职责\n- 比较多种稳压方案，最终采用 LDO 稳压方案实现芯片间稳定供电。\n- 独立完成原型 PCB 设计、打板和硬件验证。\n## 结果\n为芯片堆叠供电方案提供硬件原型验证。",
+      "status": "科研实习 · 简历记录",
+      "sources": [
+        {
+          "title": "个人简历",
+          "detail": "本轮未提供该项目的独立技术材料，保留现有概述。"
+        }
+      ]
+    },
+    {
+      "id": "twisted-pair-tester",
+      "title": "简易以太网双绞线测试仪",
+      "kind": "科研与竞赛",
+      "period": "2025.08",
+      "summary": "以 STM32G474、AD9851 DDS 和 AD8302 幅相检测构成测量系统，利用扫频与传输线谐振特性估计长度和短路位置，同时检测线序、屏蔽类型、电阻和交流衰减。",
+      "tags": [
+        "射频模拟前端",
+        "STM32",
+        "DDS / AD8302",
+        "传输线",
+        "板级调试"
+      ],
+      "body": "## 题目与个人职责\n2025 年全国大学生电子设计竞赛 D 题，团队制作简易以太网双绞线测试仪，获全国二等奖。设备以不大于 6V 的单电源供电，报告方案使用 5V/2A 充电宝。\n我主要负责射频模拟前端设计、阻抗匹配与高频衰减分析、板级排故和信号完整性验证。MCU、测量算法和整机功能作为团队方案一并介绍。\n## 测量任务与器件分工\n- STM32G474VET6：控制激励与切换，采集幅相和直流电压，组织结果与校准。\n- AD9851 DDS：产生 100kHz—65MHz 的步进激励，最小步进 10kHz。\n- AD8302：检测输入与反射/接收信号的幅度和相位关系。\n- 恒流源与采样电路：用于小电阻测量；RJ45 与屏蔽壳导通用于线序、短路和线缆类型判断。\n## 为什么采用扫频幅相法\n报告比较了 TDR 与 AD8302 幅相检测两条路线，最终采用后者。开路或短路传输线的输入阻抗随电长度周期变化，利用谐振频率与传播速度的关系，可以估计线缆长度；确认短路后，以类似方法估计短路点距离。\n相较于直接寻找幅度峰值，报告算法利用谐振点附近曲线的对称性，在两侧较陡位置取点并求平均，以减小峰顶平缓和噪声导致的定位波动。\n## 射频前端的实际难点\n双绞线的差分传输与常见 50Ω 单端测量环境不同，前端引入巴伦作差分/单端转换及阻抗匹配。交流路径通过隔直电容与直流测量隔离，兼顾线缆直流电阻和高频衰减测试。\n报告中的恒流测阻方案约使用 0.1A 电流与 100mΩ 电流采样电阻，通过 ADC 反馈稳定电流；小压降采样还需处理电平范围。板级调试围绕直交流通路隔离、阻抗与寄生参数展开。\n## 报告记录的实测结果\n| 检测项 | 结果口径 | 检测时间 |\n| --- | --- | --- |\n| 线对连接关系、是否短路、线缆类型 | 报告描述为准确稳定 | 各项 < 1 s |\n| 直流电阻 | 校准后相对误差在 10% 内 | < 3 s |\n| 交流衰减 | 相对误差大部分在 10% 内 | < 5 s |\n| 线缆长度 | 可校准，相对误差大部分在 2% 内 | < 3 s |\n| 短路位置 | 可校准，相对误差 < 5% | < 3 s |\n这些是报告实验条件下的结果。文档未提供完整逐样本测试集与置信区间，因此保留“大部分”等原有范围，不扩展成全部线缆的保证精度。\n## 限制与改进方向\n射频前端采用洞洞板搭建，寄生电阻电容使实际线缆与理想传输线模型偏离，线性校准也难以覆盖全部噪声和信号耦合。报告提出用 FFT 先估计谐振频率，再进行局部搜索，以及改进 PCB 布局、包地和走线等方向。\n1% 是报告讨论的改进目标，并未在实验结果中证明已经达到。后续复盘可以围绕模型假设、实物寄生与校准误差之间的关系展开。",
+      "status": "电子设计竞赛 · 全国二等奖",
+      "metrics": [
+        {
+          "value": "100 kHz—65 MHz",
+          "label": "DDS 扫频范围",
+          "note": "报告给出的最小步进 10 kHz"
+        },
+        {
+          "value": "大部分 ≤ 2%",
+          "label": "线缆长度相对误差",
+          "note": "报告记录，支持校准；测量 < 3 s"
+        },
+        {
+          "value": "< 5%",
+          "label": "短路位置相对误差",
+          "note": "报告实验结果；测量 < 3 s"
+        }
+      ],
+      "sources": [
+        {
+          "title": "1167 项目总结报告",
+          "detail": "第 2、4—10 页：方案、器件、理论与算法；第 11 页：实验结果；第 12 页：限制与改进。"
+        },
+        {
+          "title": "个人简历",
+          "detail": "个人工作范围为射频模拟前端、电路分析优化、复杂板级排故与信号验证。"
+        }
+      ],
+      "flow": {
+        "title": "扫频与测量通路",
+        "caption": "交流扫频与直流测阻共用接口，阻抗匹配、隔直与寄生参数影响模型和校准效果。",
+        "stages": [
+          {
+            "label": "激励",
+            "title": "STM32 与 DDS",
+            "detail": "控制 AD9851 产生步进高频信号，组织测量、校准与结果显示。"
+          },
+          {
+            "label": "前端",
+            "title": "线缆与幅相检测",
+            "detail": "经匹配与隔直网络连接双绞线，由 AD8302 检测幅度和相位。"
+          },
+          {
+            "label": "估计",
+            "title": "采样与谐振定位",
+            "detail": "ADC 采集后估计谐振频率，换算长度/短路距离；直流路径使用恒流测阻。"
+          }
+        ]
+      }
+    }
+  ],
+  "gallery": [
+    {
+      "id": "oc-human",
+      "title": "",
+      "src": "/uploads/oc-human.png",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@不晓晨昏",
+      "date": "",
+      "alt": "普通人类设定"
+    },
+    {
+      "id": "oc-color",
+      "title": "",
+      "src": "/uploads/oc-color.png",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@空阻碍",
+      "date": "",
+      "alt": "另一个我 · 彩色切片"
+    },
+    {
+      "id": "oc-pixel",
+      "title": "",
+      "src": "/uploads/oc-pixel.png",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@佰佰贪茶茶",
+      "date": "",
+      "alt": "像素里的我"
+    },
+    {
+      "id": "oc-portrait",
+      "title": "",
+      "src": "/uploads/oc-portrait.png",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@昼御时",
+      "date": "",
+      "alt": "绿发肖像"
+    },
+    {
+      "id": "oc-bird",
+      "title": "",
+      "src": "/uploads/oc-bird.png",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@zeayo治游",
+      "date": "",
+      "alt": "鸟类设定"
+    },
+    {
+      "id": "oc-smile",
+      "title": "",
+      "src": "/uploads/oc-smile.jpg",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@Rexs",
+      "date": "",
+      "alt": "笑意"
+    },
+    {
+      "id": "commission-duo",
+      "title": "",
+      "src": "/uploads/commission-duo.jpg",
+      "collection": "自设与约稿",
+      "description": "",
+      "artist": "mhs@wholemeal",
+      "date": "",
+      "alt": "约稿收藏"
+    },
+    {
+      "id": "window-light",
+      "title": "",
+      "src": "/uploads/window-light.jpg",
+      "collection": "喜欢的画面",
+      "description": "",
+      "artist": "",
+      "date": "",
+      "alt": "窗边的光"
+    },
+    {
+      "id": "green-room",
+      "title": "",
+      "src": "/uploads/green-room.jpg",
+      "collection": "喜欢的画面",
+      "description": "",
+      "artist": "",
+      "date": "",
+      "alt": "绿色房间"
+    },
+    {
+      "id": "favorite-moment",
+      "title": "最喜欢的歌手 · 陈粒 · 来源见水印。",
+      "src": "/uploads/favorite-moment.jpg",
+      "collection": "喜欢的画面",
+      "description": "",
+      "artist": "",
+      "date": "",
+      "alt": "喜欢的瞬间 · 陈粒"
+    }
+  ],
+  "copy": {
+    "siteTitle": "mosi 的个人博客",
+    "brandCaption": "MOSI",
+    "windowEyebrow": "",
+    "windowCaption": "记录学习与生活",
+    "portraitCaption": "ANOTHER ME",
+    "verticalCaption": "",
+    "signatureLabel": "",
+    "aiIntro": "关于从数字IC转向AI infra的尝试。",
+    "recentTitle": "最近落笔",
+    "recentEyebrow": "RECENT WRITINGS",
+    "aiTitle": "AI Infra 学习笔记",
+    "aiEyebrow": "STUDY NOTE",
+    "gallerySectionTitle": "自设与约稿",
+    "gallerySectionEyebrow": "OC",
+    "projectSectionTitle": "项目经历",
+    "projectSectionEyebrow": "PROJECTS & EXPERIENCE",
+    "notesButton": "翻开学习笔记",
+    "aboutButton": "关于我",
+    "recentLink": "翻阅全部",
+    "aiLink": "AI Infra",
+    "galleryLink": "翻开稿件",
+    "projectsLink": "查看更多项目",
+    "notesTitle": "学习笔记",
+    "notesEyebrow": "NOTES",
+    "notesIntro": "保持记录。",
+    "journalTitle": "随笔日记",
+    "journalEyebrow": "LIFE FRAGMENTS",
+    "journalIntro": "随便写写。",
+    "projectsTitle": "项目与实习",
+    "projectsEyebrow": "翻阅全部",
+    "projectsIntro": "关于我的项目。",
+    "galleryTitle": "稿件展示",
+    "galleryEyebrow": "A WORLD OF MY OWN",
+    "galleryIntro": "OC 与 自设",
+    "aboutTitle": "你好，我是MOSI。",
+    "aboutEyebrow": "ABOUT ME",
+    "aboutIntro": "一些关于我的小事。",
+    "aboutBodyTitle": "一处自留地。",
+    "futureTitle": "未来目标",
+    "futureIntro": "摸索前行。",
+    "stackTitle": "技术栈",
+    "tagsTitle": "关键词",
+    "githubLink": "在 GitHub 找到我",
+    "recentEmptyTitle": "这里还没有东西哦。",
+    "recentEmptyIntro": "这里还没有东西哦。",
+    "notesEmptyTitle": "这里还没有东西哦。",
+    "notesEmptyIntro": "这里还没有东西哦。",
+    "journalEmptyIntro": "这里还没有东西哦。",
+    "filterEmptyTitle": "这里还没有东西哦。",
+    "projectsEmptyTitle": "这里还没有东西哦。",
+    "galleryEmptyTitle": "这里还没有东西哦。",
+    "galleryFooter": "点击画稿查看原图 · 抄袭必究。",
+    "footerTagline": "关于时间",
+    "footerSuffix": "我在这里",
+    "homeTitle": "一片自留地",
+    "description": "mosi 的个人博客",
+    "searchTitle": "FIND SOMETHING",
+    "editorTitle": "MANAGING",
+    "homeProjectsEmptyTitle": "",
+    "homeGalleryEmptyIntro": "",
+    "searchEyebrow": "",
+    "editorEyebrow": "",
+    "projectsEmptyIntro": "",
+    "homeProjectsEmptyIntro": ""
+  }
+}
